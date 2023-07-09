@@ -1,3 +1,14 @@
+Версия ноды: 18.16.0
+Версия npm: 9.7.1
+Версия nest: 10.1.7
+Версия typescript: 5.1.3
+
+Линтеры и хук на прекоммит настроены настроены
+
+Способ разворачивания проекта - через nest new
+
+------------------------
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
