@@ -19,9 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "ts:check": "npx tsc",
-    "eslint:check": "eslint src/",
-    "prettier:check": "prettier --check src/",
-    "all:check": "npx tsc && eslint src/ && prettier --check src/",
+    "eslint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "prettier:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "all:check": "npx tsc && npm run eslint:check && npm run prettier:check",
     "prepare": "husky install"
   },
   "dependencies": {
