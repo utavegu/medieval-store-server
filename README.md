@@ -7,6 +7,63 @@
 
 Способ разворачивания проекта - через nest new
 
+Часть общего (находится на верхнем уровне, где лежат директории микросервисов) docker-compose.dev.yml, отвечающего за микросервисы сервера.
+Допущения для дев-версии файла:
+- не все версии образов зафиксированы
+- не используются Dockerfile-s
+- env захардкожены
+- вольюм базы ссылается на директорию хоста (но, возможно, в проде останется так же)
+- для удобства соединены через вольюмы приложение в контейнере и на хосте
+
+services:
+
+  mongo:
+    container_name: mongo-database-container
+    image: mongo
+    volumes:
+      - ./database:/data/db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  server:
+    container_name: server-container
+    image: node:hydrogen-alpine3.16
+    working_dir: /medieval-store-server-app
+    volumes:
+      - ./medieval-store-server:/medieval-store-server-app
+    ports:
+      - 3000:3000
+    environment:
+      - SERVER_INTERNAL_PORT=3000
+      - MONGODB_SERVICE_NAME=mongo
+      - MONGODB_INTERNAL_PORT=27017
+      - MONGODB_LOGIN=root
+      - MONGODB_PASSWORD=example
+      - DB_NAME=medieval-store
+    command: [ "npm", "run", "start:dev" ]
+    depends_on:
+      - mongo
+
+  mongo-admin-panel:
+    container_name: mongo-admin-panel-container
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017
+    depends_on:
+      - mongo
+      - server
+
+
+Для входа в запущенный контейнер используем команду:
+docker exec -it ***containername*** /bin/sh
+
 ------------------------
 
 <p align="center">
