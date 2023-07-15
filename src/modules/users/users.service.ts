@@ -16,7 +16,6 @@ export class UsersService implements IUserService {
   public async createUser(body: CreateUserDto): Promise<string> {
     /*
     TODO:
-    - возврата только нужных полей (без пассворд хэша и -v)
     - различные проверки (подумай, какие ещё нужны)
     - выбрасывание ошибок на разные кейсы (валидатор и монгуз вроде все обработали, но посмотри ещё тестовые кейсы)
     - ограничения (нужны ли ещё какие-то ограничения валидации?)
@@ -50,8 +49,21 @@ export class UsersService implements IUserService {
     }
   }
 
+  /*
   public async findUserByEmail(email: User['email']): Promise<User | any> {
-    // всё то же, что и выше, только с .findOne({ email })
+    try {
+      const user = await this.UserModel.findOne({ email }).select(
+        '-__v -passwordHash',
+      );
+      if (user) {
+        return user;
+      } else {
+        throw new NotFoundException(ERROR_MESSAGES.USER_IS_NOT_REGISTERED);
+      }
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(err.message, err.status || 500);
+    }
   }
 
   // TODO: Эти параметры - пока думаю
@@ -66,4 +78,5 @@ export class UsersService implements IUserService {
   ): Promise<User> {
     throw new Error('Method not implemented.');
   }
+  */
 }
