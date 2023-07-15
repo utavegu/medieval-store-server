@@ -5,12 +5,12 @@ import {
   IsEmail,
   Length,
   IsStrongPassword,
-  IsMobilePhone,
-  IsEnum,
+  // IsEnum,
   Min,
   Max,
+  IsPhoneNumber,
 } from 'class-validator';
-import { Roles } from '../enums/roles.enum';
+// import { Roles } from '../enums/roles.enum';
 
 export class CreateUserDto {
   @IsEmail()
@@ -18,7 +18,8 @@ export class CreateUserDto {
 
   @IsString()
   @IsStrongPassword()
-  passwordHash: string;
+  @Length(10, 30)
+  password: string;
 
   @IsString()
   @Length(2, 20)
@@ -29,16 +30,16 @@ export class CreateUserDto {
   lastName: string;
 
   @IsBoolean()
-  isMale: boolean;
+  isMale?: boolean;
 
   @IsInt()
   @Min(18)
   @Max(150)
-  age: number;
+  age?: number;
 
-  @IsMobilePhone('ru-RU')
-  contactPhone: string;
+  @IsPhoneNumber('RU')
+  contactPhone?: string;
 
-  @IsEnum(Roles)
-  role: Roles;
+  // @IsEnum(Roles)
+  // role: Roles;
 }

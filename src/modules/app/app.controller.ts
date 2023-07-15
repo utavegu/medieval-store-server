@@ -1,7 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UsersService } from '../users/users.service';
+import { CreateUserDto } from '../users/typing/dto/create-user.dto';
 import { ID } from 'src/typing/types/id';
+import { User } from '../users/schemas/user.schema';
+import { IdValidationPipe } from 'src/validation/id-validation.pipe';
 
 @Controller()
 export class AppController {
@@ -15,21 +18,25 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  // TODO: Для тестов!
+  // TODO: Ниже - для тестов!
 
   @Post('users')
-  createUser(@Body() body: any): any {
-    return this.usersService.createUser(body);
+  createUser(@Body() createUserDto: CreateUserDto): Promise<string> {
+    return this.usersService.createUser(createUserDto);
   }
 
-  // @Get('users/:userId')
-  // findTargetUserById(@Param('userId') userId: ID): any {
-  //   return this.usersService.findUserById(userId);
+  @Get('users/:id')
+  findUserById(
+    @Param('id', IdValidationPipe) id: ID,
+  ): Promise<Omit<User, 'passwordHash'>> {
+    return this.usersService.findUserById(id);
+  }
+
+  // @Get('test/:email')
+  // findUserByEmail(
+  //   @Param('email', ValidationPipe) email: CreateUserDto['email'],
+  // ): Promise<User | null> {
+  //   console.log(email);
+  //   return this.usersService.findUserByEmail(email);
   // }
-
-  // совсем порнография - просто для тестов
-  @Get('users/:userEmail')
-  findTargetUserByEmail(@Param('userId') userEmail: any): any {
-    return this.usersService.findUserByEmail(userEmail);
-  }
 }
