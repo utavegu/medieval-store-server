@@ -35,7 +35,6 @@ export class User {
   contactPhone: string;
 
   @Prop({
-    required: true,
     default: Roles.CLIENT,
   })
   role: Roles;
