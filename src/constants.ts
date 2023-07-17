@@ -9,3 +9,5 @@ export const ERROR_MESSAGES = {
   DO_NOT_ACCESS_RIGHTS: 'У вас недостаточно прав доступа!',
   IS_NOT_ID: 'Параметр не является ID',
 };
+export const DEFAULT_LIMIT = 10;
+export const DEFAULT_OFFSET = 0;

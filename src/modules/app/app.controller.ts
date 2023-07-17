@@ -1,10 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/typing/dto/create-user.dto';
 import { ID } from 'src/typing/types/id';
 import { User } from '../users/schemas/user.schema';
 import { IdValidationPipe } from 'src/validation/id-validation.pipe';
+import { ISearchUserParams } from '../users/typing/interfaces/ISearchUserParams';
+import {
+  ResponseWithWrapper,
+  responseWrapper,
+} from 'src/helpers/responseWrapper';
+import { IUsersData } from '../users/typing/interfaces/IUsersData';
 
 @Controller()
 export class AppController {
@@ -30,6 +36,21 @@ export class AppController {
     @Param('id', IdValidationPipe) id: ID,
   ): Promise<Omit<User, 'passwordHash'>> {
     return this.usersService.findUserById(id);
+  }
+
+  // TODO: роли - только манагеры и админы
+  @Get('users')
+  async fetchUsersForAdmin(
+    @Query() queryParams: ISearchUserParams,
+  ): Promise<ResponseWithWrapper> {
+    const usersData: IUsersData = await this.usersService.findAllUsers(
+      queryParams,
+    );
+    const test = responseWrapper(
+      usersData.findedUsers,
+      usersData.totalUsersCount,
+    );
+    return test;
   }
 
   // @Get('test/:email')
