@@ -4,13 +4,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { ID } from 'src/typing/types/id';
 import { IUserService } from './typing/interfaces/IUserService';
-import { ERROR_MESSAGES } from 'src/constants';
+import { DEFAULT_LIMIT, DEFAULT_OFFSET, ERROR_MESSAGES } from 'src/constants';
 import { CreateUserDto } from './typing/dto/create-user.dto';
 import { encryptPassword } from 'src/helpers/encrypting';
+import { ISearchUserParams } from './typing/interfaces/ISearchUserParams';
+import { QueryParamsWithRegex } from './typing/types/QueryParamsWithRegex';
+import { ConfigurableSearchUserParams } from './typing/types/ConfigurableSearchUserParams';
+import { IUsersData } from './typing/interfaces/IUsersData';
 
 @Injectable()
 export class UsersService implements IUserService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
   public async createUser(body: CreateUserDto): Promise<string> {
@@ -46,6 +49,39 @@ export class UsersService implements IUserService {
     } catch (err) {
       console.error(err);
       throw new HttpException(err.message, err.status || 500);
+    }
+  }
+
+  async findAllUsers(params?: ISearchUserParams): Promise<IUsersData> {
+    try {
+      const limit = params?.limit
+        ? Math.abs(Number(params.limit))
+        : DEFAULT_LIMIT;
+      const offset = params?.offset
+        ? Math.abs(Number(params.offset))
+        : DEFAULT_OFFSET;
+
+      const otherQueryParams: QueryParamsWithRegex = {};
+
+      for (const param in params) {
+        const key = param as keyof ConfigurableSearchUserParams;
+        if (param === 'limit' || param === 'offset') continue;
+        otherQueryParams[key] = { $regex: params[key] };
+      }
+
+      const findedUsers = await this.UserModel.find(otherQueryParams)
+        .limit(limit)
+        .skip(offset)
+        .select('-__v -passwordHash -role');
+
+      const totalUsersCount = await this.UserModel.count();
+
+      return {
+        findedUsers,
+        totalUsersCount,
+      };
+    } catch (err) {
+      throw new HttpException(err.message, err.status);
     }
   }
 
