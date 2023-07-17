@@ -27,7 +27,6 @@ export class ValidationPipe implements PipeTransform<any> {
 
       throw new BadRequestException(messages);
     }
-    console.log(value);
     return value;
   }
 

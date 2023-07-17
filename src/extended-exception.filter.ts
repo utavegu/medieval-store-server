@@ -17,9 +17,6 @@ export class ExtendedException implements ExceptionFilter {
     const errorCode = exception.getStatus();
     const errorMessage = exception.getResponse();
 
-    // TODO: И где-то тут ещё нужно будет логгер прицепить
-    // ТODO: Также расширить вытаскиванием из запроса данных о том, кто дёргал ручку - ОС, клиент, браузер...
-
     response.status(errorCode).json({
       timestamp: format(new Date(), 'dd/MM/yyyy - hh:mm:ss'),
       status: Statuses.FAIL,
