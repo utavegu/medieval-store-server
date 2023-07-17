@@ -12,43 +12,29 @@ export class User {
 
   @Prop({
     required: true,
-    unique: false,
   })
   passwordHash: string;
 
   @Prop({
     required: true,
-    unique: false,
   })
   firstName: string;
 
   @Prop({
     required: true,
-    unique: false,
   })
   lastName: string;
 
-  @Prop({
-    required: false,
-    unique: false,
-  })
+  @Prop()
   isMale: boolean;
 
-  @Prop({
-    required: false,
-    unique: false,
-  })
+  @Prop()
   age: number;
 
-  @Prop({
-    required: false,
-    unique: false,
-  })
+  @Prop()
   contactPhone: string;
 
   @Prop({
-    required: true,
-    unique: false,
     default: Roles.CLIENT,
   })
   role: Roles;

@@ -1,3 +1,3 @@
-// import { ObjectId } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
-export type ID = string; // | ObjectId;
+export type ID = string | ObjectId;
