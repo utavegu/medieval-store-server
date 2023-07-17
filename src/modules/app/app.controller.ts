@@ -8,8 +8,8 @@ import { IdValidationPipe } from 'src/validation/id-validation.pipe';
 import { ISearchUserParams } from '../users/typing/interfaces/ISearchUserParams';
 import {
   ResponseWithWrapper,
-  getResponseWithWrapper,
-} from 'src/helpers/get-response-with-wrapper';
+  responseWrapper,
+} from 'src/helpers/responseWrapper';
 import { IUsersData } from '../users/typing/interfaces/IUsersData';
 
 @Controller()
@@ -46,7 +46,7 @@ export class AppController {
     const usersData: IUsersData = await this.usersService.findAllUsers(
       queryParams,
     );
-    const test = getResponseWithWrapper(
+    const test = responseWrapper(
       usersData.findedUsers,
       usersData.totalUsersCount,
     );
