@@ -73,6 +73,11 @@ sudo chown -R utavegu /home/utavegu/Repositories/medieval-store/medieval-store-s
 Вот тут по этой проблеме:
 https://ru.stackoverflow.com/questions/748668/%D0%A4%D0%B0%D0%B9%D0%BB%D1%8B-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%8E%D1%82%D1%81%D1%8F-%D0%BE%D1%82-root-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F
 
+
+Для токенов:
+Вы можете сгенерировать случайный секрет, используя следующую команду:
+node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"
+
 ------------------------
 
 <p align="center">

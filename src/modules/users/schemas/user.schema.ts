@@ -38,6 +38,10 @@ export class User {
     default: Roles.CLIENT,
   })
   role: Roles;
+
+  // TODO: что за ошибка с типом, почему? Из-за того, что null еще возможен?
+  @Prop({ type: 'string' })
+  refreshToken: string | null;
 }
 
 export type UserDocument = User & Document;

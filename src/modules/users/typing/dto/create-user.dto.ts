@@ -9,6 +9,7 @@ import {
   Min,
   Max,
   IsPhoneNumber,
+  IsOptional,
 } from 'class-validator';
 // import { Roles } from '../enums/roles.enum';
 
@@ -39,6 +40,11 @@ export class CreateUserDto {
 
   @IsPhoneNumber('RU')
   contactPhone?: string;
+
+  // TODO?
+  @IsString()
+  @IsOptional()
+  refreshToken?: string;
 
   // @IsEnum(Roles)
   // role: Roles;

@@ -16,12 +16,13 @@ import { IUsersData } from './typing/interfaces/IUsersData';
 export class UsersService implements IUserService {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
-  public async createUser(body: CreateUserDto): Promise<string> {
+  async createUser(body: CreateUserDto): Promise<User> {
     /*
     TODO:
     - различные проверки (подумай, какие ещё нужны)
     - выбрасывание ошибок на разные кейсы (валидатор и монгуз вроде все обработали, но посмотри ещё тестовые кейсы)
     - ограничения (нужны ли ещё какие-то ограничения валидации?)
+    - проверяю, что пользователь зарегистрирован? Да: "E11000 duplicate key error collection: medieval-store.users index: email_1 dup key: { email: \"test@mail.ru\" }"
     */
     try {
       const { password, ...other } = body;
@@ -30,17 +31,32 @@ export class UsersService implements IUserService {
         ...other,
         passwordHash,
       });
-      return `Новый пользователь ${newUser.lastName} ${newUser.firstName} успешно зарегистрирован!`;
+      return newUser;
     } catch (err) {
       throw new HttpException(err.message, err.status || 500);
     }
   }
 
-  public async findUserById(id: ID): Promise<User> {
+  async findUserById(id: ID): Promise<User> {
     try {
       const user = await this.UserModel.findById(id).select(
         '-__v -passwordHash',
       );
+      if (user) {
+        return user;
+      } else {
+        throw new NotFoundException(ERROR_MESSAGES.USER_IS_NOT_REGISTERED);
+      }
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(err.message, err.status || 500);
+    }
+  }
+
+  async findUserByEmail(email: User['email']): Promise<User> {
+    try {
+      const user = await this.UserModel.findOne({ email }).select('-__v');
+      // TODO: DRY!
       if (user) {
         return user;
       } else {
@@ -85,12 +101,13 @@ export class UsersService implements IUserService {
     }
   }
 
-  /*
-  public async findUserByEmail(email: User['email']): Promise<User | any> {
+  // TODO: а тут update user dto
+  async updateUser(id: ID, data: Partial<User>): Promise<User> {
+    // TODO: DRY
     try {
-      const user = await this.UserModel.findOne({ email }).select(
-        '-__v -passwordHash',
-      );
+      const user = await this.UserModel.findByIdAndUpdate(id, data, {
+        new: true,
+      });
       if (user) {
         return user;
       } else {
@@ -101,18 +118,4 @@ export class UsersService implements IUserService {
       throw new HttpException(err.message, err.status || 500);
     }
   }
-
-  // TODO: Эти параметры - пока думаю
-  public async findAllUsers(params: any): Promise<User[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  // TODO: а тут update user dto
-  public async updateUser(
-    userEmail: string,
-    data: Partial<User>,
-  ): Promise<User> {
-    throw new Error('Method not implemented.');
-  }
-  */
 }
