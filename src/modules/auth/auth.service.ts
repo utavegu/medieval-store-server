@@ -16,7 +16,7 @@ import { IJwtTokens } from './typing/interfaces/IJwtTokens';
 import { User } from '../users/schemas/user.schema';
 import { IAuthService } from './typing/interfaces/IAuthService';
 
-// !!! TODO !!!
+// !!! TODO !!! Ещё тут порефакторить можно неплохо. Но всё это - когда уже готовая фронтенд-часть аутентификации будет готова
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -67,10 +67,7 @@ export class AuthService implements IAuthService {
     });
   }
 
-  async refreshTokens(
-    userId: string,
-    refreshToken: string,
-  ): Promise<IJwtTokens> {
+  async refreshTokens(userId: ID, refreshToken: string): Promise<IJwtTokens> {
     const user = await this.usersService.findUserById(userId);
 
     if (!user || !user.refreshToken) {
@@ -152,7 +149,7 @@ export class AuthService implements IAuthService {
     return tokens;
   }
 
-  async logout(userId: string): Promise<User> {
+  async logout(userId: ID): Promise<User> {
     return this.usersService.updateUser(userId, { refreshToken: null });
   }
 

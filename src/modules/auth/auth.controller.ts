@@ -14,6 +14,7 @@ import { AuthService } from './auth.service';
 import { AccessTokenGuard } from 'src/modules/auth/guards/accessToken.guard';
 import { RefreshTokenGuard } from 'src/modules/auth/guards/refreshToken.guard';
 import { User } from '../users/schemas/user.schema';
+import { ID } from 'src/typing/types/id';
 import { AuthDto } from './typing/dto/auth.dto';
 import { IJwtTokens } from './typing/interfaces/IJwtTokens';
 
@@ -47,7 +48,7 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get('logout')
   logout(
-    @Request() request: RequestType & { user: Partial<User> & { sub: string } },
+    @Request() request: RequestType & { user: Partial<User> & { sub: ID } },
     @Response({ passthrough: true }) response: ResponseType & User,
   ): void {
     console.log('Разлогинились успешно!');
@@ -64,7 +65,7 @@ export class AuthController {
   refreshTokens(
     @Request()
     request: RequestType & {
-      user: Partial<User> & { sub: string; refreshToken: string };
+      user: Partial<User> & { sub: ID; refreshToken: string };
     },
   ) {
     const { user } = request;
