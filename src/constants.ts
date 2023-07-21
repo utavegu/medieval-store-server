@@ -11,3 +11,7 @@ export const ERROR_MESSAGES = {
 };
 export const DEFAULT_LIMIT = 10;
 export const DEFAULT_OFFSET = 0;
+export const JWT = {
+  ACCESS_TOKEN_EXPIRES_IN_MINUTES: 15,
+  REFRESH_TOKEN_EXPIRES_IN_DAYS: 7,
+};

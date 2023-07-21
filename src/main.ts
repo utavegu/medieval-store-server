@@ -18,6 +18,6 @@ async function bootstrap() {
     .useStaticAssets(resolve(__dirname, '../public'))
     .use(cookieParser());
 
-  await app.listen(3000);
+  await app.listen(process.env.SERVER_INTERNAL_PORT || 3000);
 }
 bootstrap();
