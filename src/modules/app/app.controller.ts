@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UsersService } from '../users/users.service';
-import { CreateUserDto } from '../users/typing/dto/create-user.dto';
 import { ID } from 'src/typing/types/id';
 import { User } from '../users/schemas/user.schema';
 import { IdValidationPipe } from 'src/validation/id-validation.pipe';
@@ -25,11 +24,6 @@ export class AppController {
   }
 
   // TODO: Ниже - для тестов!
-
-  @Post('users')
-  createUser(@Body() createUserDto: CreateUserDto): Promise<string> {
-    return this.usersService.createUser(createUserDto);
-  }
 
   @Get('users/:id')
   findUserById(
