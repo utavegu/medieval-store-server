@@ -36,8 +36,6 @@ export class AuthController {
     @Response({ passthrough: true }) response: ResponseType & User,
   ): Promise<{ accessToken: string }> {
     const tokens = await this.authService.signIn(data);
-    console.log('tokens.refreshToken');
-    console.log(tokens.refreshToken); // тестирую ручку рефреш
     response
       .cookie('refreshToken', tokens.refreshToken, refreshTokenCookieOptions)
       .set(loginResponseHeaders);

@@ -15,6 +15,7 @@ import { UserWithId } from './typing/types/UserWithId';
 import { IJwtTokens } from './typing/interfaces/IJwtTokens';
 import { User } from '../users/schemas/user.schema';
 import { IAuthService } from './typing/interfaces/IAuthService';
+import { JWT } from 'src/constants';
 
 // !!! TODO !!! Ещё тут порефакторить можно неплохо. Но всё это - когда уже готовая фронтенд-часть аутентификации будет готова
 
@@ -28,6 +29,7 @@ export class AuthService implements IAuthService {
 
   async getTokens(payload: JwtPayload): Promise<IJwtTokens> {
     const { sub, email, role } = payload;
+    // TODO: Тут тоже, вполне, можно сделать единую функцию с разными аргами ради DRY
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -36,8 +38,8 @@ export class AuthService implements IAuthService {
           role,
         },
         {
-          secret: '123', // this.configService.get<string>('JWT_ACCESS_SECRET'), TODO
-          expiresIn: '1m',
+          secret: process.env.JWT_ACCESS_SECRET, // this.configService.get<string>('JWT_ACCESS_SECRET'), TODO
+          expiresIn: `${JWT.ACCESS_TOKEN_EXPIRES_IN_MINUTES}m`,
         },
       ),
       this.jwtService.signAsync(
@@ -47,8 +49,8 @@ export class AuthService implements IAuthService {
           role,
         },
         {
-          secret: '123', // this.configService.get<string>('JWT_REFRESH_SECRET'), TODO
-          expiresIn: '14d', // не заходил 2 недели - логинься заново
+          secret: process.env.JWT_REFRESH_SECRET, // this.configService.get<string>('JWT_REFRESH_SECRET'), TODO
+          expiresIn: `${JWT.REFRESH_TOKEN_EXPIRES_IN_DAYS}d`,
         },
       ),
     ]);

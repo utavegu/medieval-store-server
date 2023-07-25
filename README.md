@@ -24,8 +24,8 @@ services:
       - ./database:/data/db
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: $MONGODB_LOGIN
+      MONGO_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
 
   server:
     container_name: server-container
@@ -34,14 +34,16 @@ services:
     volumes:
       - ./medieval-store-server:/medieval-store-server-app
     ports:
-      - 3000:3000
+      - $SERVER_EXTERNAL_PORT:$SERVER_INTERNAL_PORT
     environment:
-      - SERVER_INTERNAL_PORT=3000
-      - MONGODB_SERVICE_NAME=mongo
-      - MONGODB_INTERNAL_PORT=27017
-      - MONGODB_LOGIN=root
-      - MONGODB_PASSWORD=example
-      - DB_NAME=medieval-store
+      - SERVER_INTERNAL_PORT=$SERVER_INTERNAL_PORT
+      - MONGODB_SERVICE_NAME=$MONGODB_SERVICE_NAME
+      - MONGODB_INTERNAL_PORT=$MONGODB_INTERNAL_PORT
+      - MONGODB_LOGIN=$MONGODB_LOGIN
+      - MONGODB_PASSWORD=$MONGODB_PASSWORD
+      - DB_NAME=$DB_NAME
+      - JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET
+      - JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
     command: [ "npm", "run", "start:dev" ]
     depends_on:
       - mongo
@@ -51,11 +53,11 @@ services:
     image: mongo-express
     restart: always
     ports:
-      - 8081:8081
+      - $MONGO_ADMIN_PANEL_EXTERNAL_PORT:$MONGO_ADMIN_PANEL_INTERNAL_PORT
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: $MONGODB_LOGIN
+      ME_CONFIG_MONGODB_ADMINPASSWORD: $MONGODB_PASSWORD
+      ME_CONFIG_MONGODB_URL: mongodb://$MONGODB_LOGIN:$MONGODB_PASSWORD@$MONGODB_SERVICE_NAME:$MONGODB_INTERNAL_PORT
     depends_on:
       - mongo
       - server
