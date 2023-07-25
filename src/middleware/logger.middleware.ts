@@ -4,6 +4,8 @@ import { Request, Response, NextFunction } from 'express';
 import * as fs from 'fs';
 import * as os from 'os';
 
+// TODO: Ещё бы неплохо (а может и плохо), чтобы он самоподчищался как-нибудь раз во сколько-нибудь
+
 export function LoggerMiddleware(
   request: Request,
   _response: Response,

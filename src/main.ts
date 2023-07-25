@@ -16,8 +16,13 @@ async function bootstrap() {
     .useGlobalPipes(new ValidationPipe())
     .use(LoggerMiddleware)
     .useStaticAssets(resolve(__dirname, '../public'))
-    .use(cookieParser());
+    .use(cookieParser())
+    .enableCors({
+      origin: ['http://localhost:3000'], // енв, конфиг, зависимость от ноденв-продакшн. И разберись ещё потом - внешний или внутренний порт фронтенда нужно указывать.
+      credentials: true,
+      optionsSuccessStatus: 200,
+    });
 
-  await app.listen(process.env.SERVER_INTERNAL_PORT || 3000);
+  await app.listen(process.env.SERVER_INTERNAL_PORT || 4000);
 }
 bootstrap();
