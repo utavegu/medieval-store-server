@@ -107,7 +107,7 @@ export class UsersService implements IUserService {
     try {
       const user = await this.UserModel.findByIdAndUpdate(id, data, {
         new: true,
-      });
+      }).select('-__v -passwordHash -role -_id');
       if (user) {
         return user;
       } else {

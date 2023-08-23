@@ -25,14 +25,17 @@ export class AppController {
 
   // TODO: Ниже - для тестов!
 
+  /*
   @Get('users/:id')
   findUserById(
     @Param('id', IdValidationPipe) id: ID,
   ): Promise<Omit<User, 'passwordHash'>> {
     return this.usersService.findUserById(id);
   }
+  */
 
   // TODO: роли - только манагеры и админы
+  /* Чтобы не перехватывал модуль юзеров... но тут правильнее
   @Get('users')
   async fetchUsersForAdmin(
     @Query() queryParams: ISearchUserParams,
@@ -46,6 +49,7 @@ export class AppController {
     );
     return test;
   }
+  */
 
   // @Get('test/:email')
   // findUserByEmail(
