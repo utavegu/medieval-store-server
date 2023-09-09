@@ -18,6 +18,8 @@ import { ID } from 'src/typing/types/id';
 import { AuthDto } from './typing/dto/auth.dto';
 import { IJwtTokens } from './typing/interfaces/IJwtTokens';
 
+// TODO: Часть методов асинхронные, часть - нет. Освежи этот момент в памяти. Вроде в контроллере асинк-эвэйты не обязательны, лишь бы в сервисах были
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -30,6 +32,7 @@ export class AuthController {
 
   // Только незалогиненным пользователям
   // mock password: 1dd2__345A__!f-f+s
+  // TODO: А почему успешный ответ 201? Какой ресурс мы создали? Дефолтная реакция на POST-запрос?
   @Post('login')
   async signin(
     @Body() data: AuthDto,
@@ -49,11 +52,9 @@ export class AuthController {
     @Request() request: RequestType & { user: Partial<User> & { sub: ID } },
     @Response({ passthrough: true }) response: ResponseType & User,
   ): void {
-    console.log('Разлогинились успешно!');
     this.authService.logout(request.user['sub']);
-    response.clearCookie('refreshToken');
-    // TODO: И ещё нужно чтобы фронтенд в этот момент в локалсторадже ацесс токен чистил
-    // response.cookie('refreshToken', '', { expires: new Date() });
+    response.clearCookie('refreshToken'); // TODO: Странно, что на фронтенде не затирается ни так...
+    // response.cookie('refreshToken', '', { expires: new Date() }); // ...ни эдак. А, креденшиалс... коварная штука. Всё, починил.
     return;
   }
 
@@ -69,14 +70,16 @@ export class AuthController {
     const { user } = request;
     const userId = user['sub'];
     const refreshToken = user['refreshToken'];
-    return this.authService.refreshTokens(userId, refreshToken);
+    return this.authService.refreshTokens(userId, refreshToken); // TODO: тут неправильно - повтори логику из логина
   }
 
   // TODO: ВРЕМЕННО - защищённая тестовая ручка
-  @UseGuards(AccessTokenGuard) // Доступ только с валидным аццесс-токеном в заголовки Authorization: Bearer *
+  @UseGuards(AccessTokenGuard) // Доступ только с валидным аццесс-токеном в заголовке Authorization: Bearer *
   // Если же ацесс-токен протухший - на клиент вернуть 401 на который тот, в свою очередь, ответит запросом на /refresh, который проверит рефреш-токен, хранящийся в куках, на валидность и что он совпадает с токеном, лежащим в БД у данного юзера. Если всё ок, вернет на клиент новую пару ацесс и рефреш (как при успешном логине)
   @Get('test')
   test(): string {
     return 'Вы получили доступ к защищённому эндпоинту!';
   }
 }
+
+// TODO: и в ближайшей перспективе тестовые ручки (тестирование гард) - только залогиненные, только незалогиненные, только клиент с таким же ID, только манагер, только админ.

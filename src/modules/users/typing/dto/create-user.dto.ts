@@ -31,14 +31,17 @@ export class CreateUserDto {
   lastName: string;
 
   @IsBoolean()
+  @IsOptional()
   isMale?: boolean;
 
   @IsInt()
   @Min(18)
   @Max(150)
+  @IsOptional()
   age?: number;
 
   @IsPhoneNumber('RU')
+  @IsOptional()
   contactPhone?: string;
 
   // TODO?

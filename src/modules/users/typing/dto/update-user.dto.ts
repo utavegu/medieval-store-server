@@ -7,6 +7,7 @@ import {
   Min,
   Max,
   IsPhoneNumber,
+  IsOptional,
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -18,20 +19,25 @@ export class UpdateUserDto {
 
   @IsString()
   @Length(2, 20)
+  @IsOptional()
   firstName?: string;
 
   @IsString()
   @Length(2, 20)
+  @IsOptional()
   lastName?: string;
 
   @IsBoolean()
+  @IsOptional()
   isMale?: boolean;
 
   @IsInt()
   @Min(18)
   @Max(150)
+  @IsOptional()
   age?: number;
 
   @IsPhoneNumber('RU')
+  @IsOptional()
   contactPhone?: string;
 }
