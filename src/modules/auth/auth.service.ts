@@ -63,6 +63,7 @@ export class AuthService implements IAuthService {
 
   async updateRefreshToken(userId: ID, refreshToken: string): Promise<void> {
     // const hashedRefreshToken = await this.hashData(refreshToken);
+    // TODO: Тут нужно будет усложнить логику, когда можно будет логиниться из нескольких мест (браузеров, устройств, айпишников...). Также нужно будет продумать механизм, удаляющий протухшие токены из базы данных.
     const hashedRefreshToken = await encryptPassword(refreshToken);
     await this.usersService.updateUser(userId, {
       refreshToken: hashedRefreshToken,
@@ -122,6 +123,7 @@ export class AuthService implements IAuthService {
 
   // войти в систему, залогиниться
   async signIn(loginData: AuthDto): Promise<IJwtTokens> {
+    // TODO: доработать метод так, чтобы в "рефреш токенс" юзера также записывались данные об айпи-адресе, устройстве и браузере. Если что-то из этого новое - высылать пользователю на почту уведомлению о входе с нового устройства/браузера/места. Не тут, но: предлагать запомнить конкретное устройство, показывать список устройств на фронтенде на которых залогинен пользователь. Реализовать возможность разлогинится как на конкретном устройстве, так и на всех, кроме текущего.
     // Check if user exists
     const user = await this.usersService.findUserByEmail(loginData.email);
     // console.log(user);
@@ -153,6 +155,10 @@ export class AuthService implements IAuthService {
 
   async logout(userId: ID): Promise<User> {
     return this.usersService.updateUser(userId, { refreshToken: null });
+  }
+
+  async activateProfile(activationLink: string): Promise<void> {
+    return await this.usersService.activateUserProfile(activationLink);
   }
 
   // hashData(data: string) {
