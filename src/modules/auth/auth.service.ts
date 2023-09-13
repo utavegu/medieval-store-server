@@ -155,6 +155,7 @@ export class AuthService implements IAuthService {
 
   async logout(userId: ID): Promise<User> {
     return this.usersService.updateUser(userId, { refreshToken: null });
+    // TODO: тут будет поиск по дивайсу/браузеру и тд в базе токенов и удаление объекта с токеном и прочими данными только для этого дивайса и браузера.
   }
 
   async activateProfile(activationLink: string): Promise<void> {

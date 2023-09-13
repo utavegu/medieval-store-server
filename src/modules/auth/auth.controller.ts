@@ -76,7 +76,7 @@ export class AuthController {
   }
 
   @Get('activate/:link')
-  // TODO: Валидация! (но нужна ли?)
+  // TODO: Валидация! (но нужна ли? на уровне сервиса вполне норм проверяется)
   @Redirect('http://localhost:3000', 301) // TODO: динамичный енв, зависимый от прод/дев. Страница успешной активации профиля
   async activateProfile(@Param('link') link: string): Promise<void> {
     await this.authService.activateProfile(link);
