@@ -6,6 +6,8 @@ import {
   Get,
   Post,
   Body,
+  Param,
+  Redirect,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { loginResponseHeaders, refreshTokenCookieOptions } from './auth.config';
@@ -71,6 +73,14 @@ export class AuthController {
     const userId = user['sub'];
     const refreshToken = user['refreshToken'];
     return this.authService.refreshTokens(userId, refreshToken); // TODO: тут неправильно - повтори логику из логина
+  }
+
+  @Get('activate/:link')
+  // TODO: Валидация! (но нужна ли? на уровне сервиса вполне норм проверяется)
+  @Redirect('http://localhost:3000', 301) // TODO: динамичный енв, зависимый от прод/дев. Страница успешной активации профиля
+  async activateProfile(@Param('link') link: string): Promise<void> {
+    await this.authService.activateProfile(link);
+    return;
   }
 
   // TODO: ВРЕМЕННО - защищённая тестовая ручка

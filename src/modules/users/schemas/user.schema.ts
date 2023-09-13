@@ -40,9 +40,24 @@ export class User {
   role: Roles;
 
   // TODO: что за ошибка с типом, почему? Из-за того, что null еще возможен?
-  @Prop({ type: 'string' })
+  // TODO: Сделать поле не строкой, а массивом объектов, где также будут поля айпи-адрес, устройство и браузер (фингерпринт браузера).
+  // TODO: Совсем по хорошему - токены должна быть отдельная модель, связанная через ID пользователя с моделью юзера (где сам токен - обязательная строка)
+  // user: {type: Schema.Types.ObjectId, ref: 'User'}
+  @Prop({
+    type: 'string',
+  })
   refreshToken: string | null;
+
+  @Prop({
+    default: false,
+  })
+  isActivated: boolean;
+
+  @Prop()
+  activationLink: string;
 }
+
+// TODO: Ещё неплохо бы добавить дату-время регистрации и дату-время активации профиля. Первое точно можно автоматически создавать.
 
 export type UserDocument = User & Document;
 

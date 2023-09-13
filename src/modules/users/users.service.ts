@@ -1,6 +1,14 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
+import * as uuid from 'uuid';
+// import * as nodemailer from 'nodemailer';
 import { InjectModel } from '@nestjs/mongoose';
+import { MailService } from '../mail/mail.service';
 import { User, UserDocument } from './schemas/user.schema';
 import { ID } from 'src/typing/types/id';
 import { IUserService } from './typing/interfaces/IUserService';
@@ -14,7 +22,10 @@ import { IUsersData } from './typing/interfaces/IUsersData';
 
 @Injectable()
 export class UsersService implements IUserService {
-  constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private UserModel: Model<UserDocument>,
+    private mailService: MailService,
+  ) {}
 
   async createUser(body: CreateUserDto): Promise<User> {
     /*
@@ -27,10 +38,16 @@ export class UsersService implements IUserService {
     try {
       const { password, ...other } = body;
       const passwordHash = await encryptPassword(password);
+      const activationLink = uuid.v4();
       const newUser = await this.UserModel.create({
         ...other,
         passwordHash,
+        activationLink,
       });
+      await this.mailService.sendActivationMail(
+        body.email,
+        `http://localhost:${process.env.SERVER_EXTERNAL_PORT}/api/auth/activate/${activationLink}`,
+      );
       return newUser;
     } catch (err) {
       throw new HttpException(err.message, err.status || 500);
@@ -116,6 +133,24 @@ export class UsersService implements IUserService {
     } catch (err) {
       console.error(err);
       throw new HttpException(err.message, err.status || 500);
+    }
+  }
+
+  async activateUserProfile(activationLink: string): Promise<void> {
+    try {
+      const user = await this.UserModel.findOne({ activationLink });
+      if (!user || user.activationLink !== activationLink) {
+        throw new HttpException(
+          'Некорректная ссылка активации', // TODO - в константы
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.UserModel.findByIdAndUpdate(user._id, {
+        isActivated: true,
+      });
+      return;
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 }
