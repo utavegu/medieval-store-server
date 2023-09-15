@@ -11,15 +11,18 @@ import {
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { loginResponseHeaders, refreshTokenCookieOptions } from './auth.config';
+import { Role } from 'src/decorators/role.decorator';
 import { CreateUserDto } from 'src/modules/users/typing/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AccessTokenGuard } from 'src/modules/auth/guards/accessToken.guard';
 import { RefreshTokenGuard } from 'src/modules/auth/guards/refreshToken.guard';
+import { RoleGuard } from './guards/role.guard';
+import { OnlyGuestGuard } from './guards/only-guest.guard';
 import { User } from '../users/schemas/user.schema';
 import { ID } from 'src/typing/types/id';
 import { AuthDto } from './typing/dto/auth.dto';
 import { IJwtTokens } from './typing/interfaces/IJwtTokens';
-
+import { Roles } from '../users/typing/enums/roles.enum';
 // TODO: Часть методов асинхронные, часть - нет. Освежи этот момент в памяти. Вроде в контроллере асинк-эвэйты не обязательны, лишь бы в сервисах были
 
 @Controller('auth')
@@ -83,13 +86,43 @@ export class AuthController {
     return;
   }
 
-  // TODO: ВРЕМЕННО - защищённая тестовая ручка
+  // TODO: ВРЕМЕННО - далее - защищённые тестовые ручки
+
+  // Любой залогиненный пользователь
   @UseGuards(AccessTokenGuard) // Доступ только с валидным аццесс-токеном в заголовке Authorization: Bearer *
   // Если же ацесс-токен протухший - на клиент вернуть 401 на который тот, в свою очередь, ответит запросом на /refresh, который проверит рефреш-токен, хранящийся в куках, на валидность и что он совпадает с токеном, лежащим в БД у данного юзера. Если всё ок, вернет на клиент новую пару ацесс и рефреш (как при успешном логине)
   @Get('test')
-  test(): string {
+  test(
+    @Request()
+    request: RequestType & {
+      user: Partial<User> & { sub: ID; refreshToken: string };
+    },
+  ): string {
+    const { user } = request;
+    // console.log(user);
     return 'Вы получили доступ к защищённому эндпоинту!';
   }
-}
 
-// TODO: и в ближайшей перспективе тестовые ручки (тестирование гард) - только залогиненные, только незалогиненные, только клиент с таким же ID, только манагер, только админ.
+  // Только незалогиненным пользователям
+  @UseGuards(OnlyGuestGuard)
+  @Get('test/guest')
+  testGuest(): string {
+    return 'Ручка только для гостей';
+  }
+
+  // Только манагерам
+  @Role(Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Get('test/manager')
+  testManager(): string {
+    return 'Только манагеры';
+  }
+
+  // Только админам
+  @Role(Roles.ADMIN)
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Get('test/admin')
+  testAdmin(): string {
+    return 'Только админы';
+  }
+}

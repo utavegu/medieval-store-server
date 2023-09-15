@@ -20,7 +20,7 @@ export class UsersController {
     return this.usersService.findAllUsers(queryParams);
   }
 
-  // Админская и манагерская ручка
+  // Админская и манагерская ручка (нет - любого авторизованного, айди извлекать из юзера)
   @Get(':id')
   findUserById(
     @Param('id', IdValidationPipe) id: ID,
@@ -34,7 +34,7 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  // Ручка для залогиненного пользователя с айди равным тому, который редактируется
+  // Ручка для залогиненного пользователя с айди равным тому, который редактируется (нет - любого авторизованного, айди извлекать из юзера)
   @Put(':id')
   editUser(
     @Param('id', IdValidationPipe) id: ID,
