@@ -35,6 +35,7 @@ export class User {
   contactPhone: string;
 
   @Prop({
+    enum: Roles,
     default: Roles.CLIENT,
   })
   role: Roles;
@@ -57,7 +58,11 @@ export class User {
   activationLink: string;
 }
 
-// TODO: Ещё неплохо бы добавить дату-время регистрации и дату-время активации профиля. Первое точно можно автоматически создавать.
+/*
+TODO: Ещё неплохо бы добавить дату-время регистрации и дату-время активации профиля. Первое точно можно автоматически создавать.
+@Prop({ required: true, default: new Date() })
+public createAt: Date;
+*/
 
 export type UserDocument = User & Document;
 
