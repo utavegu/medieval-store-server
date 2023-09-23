@@ -27,20 +27,20 @@ export class Product {
 
   @Prop({
     required: true,
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductCategory',
   })
   category: ProductCategory;
 
   @Prop({
     required: true,
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductType',
   })
   type: ProductType;
 
   @Prop({
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductSubtype',
   })
   subtype: ProductSubtype;

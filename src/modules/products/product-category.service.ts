@@ -22,7 +22,7 @@ export class ProductCategoryService {
     }
   }
 
-  async getAllCategories() {
+  async getAllCategories(): Promise<ProductCategory[]> {
     try {
       return await this.ProductCategoryModel.find();
     } catch (err) {
