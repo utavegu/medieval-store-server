@@ -20,27 +20,27 @@ export class Product {
   @Prop({
     required: true,
   })
-  price: number; // TODO: с плавающей точкой до двух символов
+  price: number;
 
   @Prop()
-  discount: number; // TODO: целое число от 0 до 100
+  discount: number;
 
   @Prop({
     required: true,
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductCategory',
   })
   category: ProductCategory;
 
   @Prop({
     required: true,
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductType',
   })
   type: ProductType;
 
   @Prop({
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductSubtype',
   })
   subtype: ProductSubtype;
@@ -48,7 +48,7 @@ export class Product {
   @Prop({ default: [] })
   photos: [string];
 
-  // Поле делаю необязательным, наличие проверять либо по длине массива, либо пробегаться по его объектам и смотреть каунт
+  // Поле делаю необязательным, наличие проверять либо по длине массива, либо пробегаться по его объектам и смотреть каунт. Если нет явного ответа, отрисосывать в наличии "неизвестно"
   @Prop({
     type: [MongooseSchema.Types.ObjectId],
     ref: 'ProductsAvailability',

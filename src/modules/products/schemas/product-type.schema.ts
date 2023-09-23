@@ -7,7 +7,7 @@ import { ProductCategory } from './product-category.schema';
 export class ProductType {
   @Prop({
     required: true,
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductCategory',
   })
   parentCategory: ProductCategory;

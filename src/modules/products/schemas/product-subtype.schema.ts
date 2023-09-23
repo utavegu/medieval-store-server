@@ -7,7 +7,7 @@ import { ProductType } from './product-type.schema';
 export class ProductSubtype {
   @Prop({
     required: true,
-    type: [MongooseSchema.Types.ObjectId],
+    type: MongooseSchema.Types.ObjectId,
     ref: 'ProductType',
   })
   parentType: ProductType;
