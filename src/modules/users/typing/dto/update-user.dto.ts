@@ -40,4 +40,9 @@ export class UpdateUserDto {
   @IsPhoneNumber('RU')
   @IsOptional()
   contactPhone?: string;
+
+  // TODO: да, повод тебя запихать сюда был, компилер тс-а ругается. Но разберись всё ли тут правильно.
+  @IsString()
+  @IsOptional()
+  refreshToken?: string | null;
 }
