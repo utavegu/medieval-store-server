@@ -6,9 +6,14 @@ import {
   ProductCategorySchema,
 } from './schemas/product-category.schema';
 import { ProductType, ProductTypeSchema } from './schemas/product-type.schema';
+import {
+  ProductSubtype,
+  ProductSubtypeSchema,
+} from './schemas/product-subtype.schema';
 import { ProductsService } from './products.service';
 import { ProductCategoryService } from './product-category.service';
 import { ProductTypeService } from './product-type.service';
+import { ProductSubtypeService } from './product-subtype.service';
 import { ProductsController } from './products.controller';
 
 @Module({
@@ -20,8 +25,16 @@ import { ProductsController } from './products.controller';
     MongooseModule.forFeature([
       { name: ProductType.name, schema: ProductTypeSchema },
     ]),
+    MongooseModule.forFeature([
+      { name: ProductSubtype.name, schema: ProductSubtypeSchema },
+    ]),
   ],
-  providers: [ProductsService, ProductCategoryService, ProductTypeService],
+  providers: [
+    ProductsService,
+    ProductCategoryService,
+    ProductTypeService,
+    ProductSubtypeService,
+  ],
   controllers: [ProductsController],
 })
 export class ProductsModule {}

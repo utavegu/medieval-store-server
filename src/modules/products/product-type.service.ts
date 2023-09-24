@@ -25,9 +25,11 @@ export class ProductTypeService {
     }
   }
 
-  async getAllProductTypes(): Promise<ProductType[]> {
+  async getAllProductTypesInCategory(
+    parentCategory: ProductType['parentCategory'],
+  ): Promise<ProductType[]> {
     try {
-      return await this.ProductTypeModel.find()
+      return await this.ProductTypeModel.find({ parentCategory })
         .populate({
           path: 'parentCategory',
           select: 'productCategoryName',
