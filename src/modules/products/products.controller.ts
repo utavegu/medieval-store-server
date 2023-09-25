@@ -7,7 +7,11 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { getImagesPaths } from 'src/helpers/getImagesPaths';
 import { ProductsService } from './products.service';
 import { ProductCategoryService } from './product-category.service';
 import { ProductTypeService } from './product-type.service';
@@ -22,6 +26,13 @@ import { CreateProductDto } from './typespaces/dto/create-product.dto';
 import { CreateProductTypeDto } from './typespaces/dto/create-product-type.dto';
 import { CreateProductSubtypeDto } from './typespaces/dto/create-product-subtype.dto';
 import { IProductsQueryParams } from './typespaces/interfaces/IProductsQueryParams';
+import {
+  MAX_IMAGES_COUNT,
+  filesInterceptorSetup,
+  imageParseFilePipeInstance,
+} from 'src/config/multer.setup';
+
+// TODO: возможность удалять фото. А для редактирования загружается весь массив с превьюшками.
 
 @Controller('products')
 export class ProductsController {
@@ -33,8 +44,17 @@ export class ProductsController {
   ) {}
 
   @Post()
-  createProduct(@Body() body: CreateProductDto): Promise<Product> {
-    return this.productsService.createProduct(body);
+  @UseInterceptors(
+    FilesInterceptor('photos', MAX_IMAGES_COUNT, filesInterceptorSetup),
+  )
+  createProduct(
+    @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
+    @Body() body: CreateProductDto,
+  ): Promise<Product> {
+    return this.productsService.createProduct({
+      ...body,
+      photos: getImagesPaths(files),
+    });
   }
 
   @Get()
