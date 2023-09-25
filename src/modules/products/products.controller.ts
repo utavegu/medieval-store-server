@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductCategoryService } from './product-category.service';
@@ -20,6 +21,7 @@ import { ID } from 'src/typing/types/id';
 import { CreateProductDto } from './typespaces/dto/create-product.dto';
 import { CreateProductTypeDto } from './typespaces/dto/create-product-type.dto';
 import { CreateProductSubtypeDto } from './typespaces/dto/create-product-subtype.dto';
+import { IProductsQueryParams } from './typespaces/interfaces/IProductsQueryParams';
 
 @Controller('products')
 export class ProductsController {
@@ -30,9 +32,16 @@ export class ProductsController {
     private readonly productSubtypeService: ProductSubtypeService,
   ) {}
 
-  @Post('create')
+  @Post()
   createProduct(@Body() body: CreateProductDto): Promise<Product> {
     return this.productsService.createProduct(body);
+  }
+
+  @Get()
+  getProductsByParams(
+    @Query() queryParams: IProductsQueryParams,
+  ): Promise<Product[]> {
+    return this.productsService.getProductsByParams(queryParams);
   }
 
   @Post('categories')
