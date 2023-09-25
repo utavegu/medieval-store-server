@@ -44,7 +44,7 @@ export class CreateUserDto {
   @IsOptional()
   contactPhone?: string;
 
-  // TODO?
+  // TODO? Нафига я тебя в ДТО запихал?..
   @IsString()
   @IsOptional()
   refreshToken?: string;

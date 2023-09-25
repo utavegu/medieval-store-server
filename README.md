@@ -30,13 +30,17 @@ services:
   server:
     container_name: server-container
     image: node:hydrogen-alpine3.16
+    user: "${UID}:${GID}"
     working_dir: /medieval-store-server-app
     volumes:
       - ./medieval-store-server:/medieval-store-server-app
     ports:
       - $SERVER_EXTERNAL_PORT:$SERVER_INTERNAL_PORT
     environment:
+      - UID=$UID
+      - GID=$GID
       - SERVER_INTERNAL_PORT=$SERVER_INTERNAL_PORT
+      - SERVER_EXTERNAL_PORT=$SERVER_EXTERNAL_PORT
       - MONGODB_SERVICE_NAME=$MONGODB_SERVICE_NAME
       - MONGODB_INTERNAL_PORT=$MONGODB_INTERNAL_PORT
       - MONGODB_LOGIN=$MONGODB_LOGIN
@@ -44,6 +48,10 @@ services:
       - DB_NAME=$DB_NAME
       - JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET
       - JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
+      - SMTP_HOST=$SMTP_HOST
+      - SMTP_PORT=$SMTP_PORT
+      - SMTP_USER=$SMTP_USER
+      - SMTP_PASSWORD=$SMTP_PASSWORD
     command: [ "npm", "run", "start:dev" ]
     depends_on:
       - mongo
@@ -66,15 +74,8 @@ services:
 Для входа в запущенный контейнер используем команду:
 docker exec -it ***containername*** /bin/sh
 
-Ещё вчера, после настройки композа, заметил странную проблему. После запуска докер-композ дев-файла директория дист убивается и новая создаётся уже с правами root. Потому npx tsc / nest build в дальнейшем начинают выдавать ошибку. Пока решаю вот так:
+Проблему с рутом решил, но команду оставлю тут пока:
 sudo chown -R utavegu /home/utavegu/Repositories/medieval-store/medieval-store-server/dist
-Но нужно понять, как решить эту проблему глобально. Из мыслей на счёт "почему так получилось" - различий от типовой работы было только 2:
-1) В этот раз докер-композ файл лежит ещё выше уровнем, чем корень проекта - то есть пакадж, гит и тд находятся уже каждый в своей директории проекта
-2) Работал не в ветке мастер. Но учитывая, что на уровне с композом вообще нет гитовых файлов - гит про него просто не знает.
-На данный момент точно понятно, что это происходит только после запуска композ-файла. Если вручную запускать любые скрипты, запускающие тайпскрипт-компилер, dist создаётся с правами текущего пользователя.
-Вот тут по этой проблеме:
-https://ru.stackoverflow.com/questions/748668/%D0%A4%D0%B0%D0%B9%D0%BB%D1%8B-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%8E%D1%82%D1%81%D1%8F-%D0%BE%D1%82-root-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F
-
 
 Для токенов:
 Вы можете сгенерировать случайный секрет, используя следующую команду:

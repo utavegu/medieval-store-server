@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as uuid from 'uuid';
-// import * as nodemailer from 'nodemailer';
 import { InjectModel } from '@nestjs/mongoose';
 import { MailService } from '../mail/mail.service';
 import { User, UserDocument } from './schemas/user.schema';
@@ -14,6 +13,7 @@ import { ID } from 'src/typing/types/id';
 import { IUserService } from './typing/interfaces/IUserService';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET, ERROR_MESSAGES } from 'src/constants';
 import { CreateUserDto } from './typing/dto/create-user.dto';
+import { UpdateUserDto } from './typing/dto/update-user.dto';
 import { encryptPassword } from 'src/helpers/encrypting';
 import { ISearchUserParams } from './typing/interfaces/ISearchUserParams';
 import { QueryParamsWithRegex } from './typing/types/QueryParamsWithRegex';
@@ -118,8 +118,7 @@ export class UsersService implements IUserService {
     }
   }
 
-  // TODO: а тут update user dto
-  async updateUser(id: ID, data: Partial<User>): Promise<User> {
+  async updateUser(id: ID, data: UpdateUserDto): Promise<User> {
     // TODO: DRY
     try {
       const user = await this.UserModel.findByIdAndUpdate(id, data, {
