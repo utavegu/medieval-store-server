@@ -5,9 +5,9 @@ import {
   Min,
   Max,
   IsOptional,
-  IsNumber,
   IsMongoId,
   IsArray,
+  IsNumberString,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -19,9 +19,8 @@ export class CreateProductDto {
   @IsOptional()
   description?: string;
 
-  // TODO: с плавающей точкой до двух символов - проверь, что работает валидация
-  @IsNumber({ maxDecimalPlaces: 2 })
-  price: number;
+  @IsNumberString()
+  price: string;
 
   @IsInt()
   @Min(0)

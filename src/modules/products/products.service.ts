@@ -21,7 +21,10 @@ export class ProductsService implements IProductsService {
       return await (
         await (
           await (
-            await this.ProductModel.create(body)
+            await this.ProductModel.create({
+              ...body,
+              price: Math.abs(Number(body.price)).toFixed(2),
+            })
           ).populate({
             path: 'category',
             select: 'productCategoryName',
