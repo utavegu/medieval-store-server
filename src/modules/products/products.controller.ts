@@ -11,26 +11,26 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { getImagesPaths } from 'src/helpers/getImagesPaths';
 import { ProductsService } from './products.service';
 import { ProductCategoryService } from './product-category.service';
 import { ProductTypeService } from './product-type.service';
 import { ProductSubtypeService } from './product-subtype.service';
+import { IdValidationPipe } from 'src/validation/id-validation.pipe';
+import {
+  MAX_IMAGES_COUNT,
+  filesInterceptorSetup,
+  imageParseFilePipeInstance,
+} from 'src/modules/files/multer.setup';
 import { Product } from './schemas/product.schema';
 import { ProductCategory } from './schemas/product-category.schema';
 import { ProductType } from './schemas/product-type.schema';
 import { ProductSubtype } from './schemas/product-subtype.schema';
-import { IdValidationPipe } from 'src/validation/id-validation.pipe';
 import { ID } from 'src/typing/types/id';
 import { CreateProductDto } from './typespaces/dto/create-product.dto';
 import { CreateProductTypeDto } from './typespaces/dto/create-product-type.dto';
 import { CreateProductSubtypeDto } from './typespaces/dto/create-product-subtype.dto';
 import { IProductsQueryParams } from './typespaces/interfaces/IProductsQueryParams';
-import {
-  MAX_IMAGES_COUNT,
-  filesInterceptorSetup,
-  imageParseFilePipeInstance,
-} from 'src/config/multer.setup';
+import { removePhotoDto } from './typespaces/dto/remove-photo.dto';
 
 // TODO: возможность удалять фото. А для редактирования загружается весь массив с превьюшками.
 
@@ -51,10 +51,7 @@ export class ProductsController {
     @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
     @Body() body: CreateProductDto,
   ): Promise<Product> {
-    return this.productsService.createProduct({
-      ...body,
-      photos: getImagesPaths(files),
-    });
+    return this.productsService.createProduct(body, files);
   }
 
   @Get()
@@ -62,6 +59,11 @@ export class ProductsController {
     @Query() queryParams: IProductsQueryParams,
   ): Promise<Product[]> {
     return this.productsService.getProductsByParams(queryParams);
+  }
+
+  @Put('photo')
+  removePhoto(@Body() body: removePhotoDto): Promise<void> {
+    return this.productsService.removePhoto(body);
   }
 
   @Post('categories')
