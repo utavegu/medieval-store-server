@@ -15,6 +15,7 @@ import { ProductCategoryService } from './product-category.service';
 import { ProductTypeService } from './product-type.service';
 import { ProductSubtypeService } from './product-subtype.service';
 import { ProductsController } from './products.controller';
+import { FilesService } from '../files/files.service';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProductsController } from './products.controller';
     ProductCategoryService,
     ProductTypeService,
     ProductSubtypeService,
+    FilesService,
   ],
   controllers: [ProductsController],
 })
