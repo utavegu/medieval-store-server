@@ -15,6 +15,7 @@ export function LoggerMiddleware(
   const { url, method, headers, hostname } = request;
   const data = `Date: ${date}\nMethod: ${method}\nHost: ${hostname}\nEndpoint: ${url}\nUser-Agent: ${headers['user-agent']}\nAccept-Language: ${headers['accept-language'] ? headers['accept-language'] : 'нет данных'}\n`;
 
+  // TODO: Нафига я тебя в срц сохраняю, кстати?
   fs.appendFile('src/requests.log', data + os.EOL, (error) => {
     if (error) throw error;
   });

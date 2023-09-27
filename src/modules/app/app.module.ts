@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
 import { ProductsModule } from '../products/products.module';
+import { FilesModule } from '../files/files.module';
 
 // TODOs ниже
 
@@ -25,9 +24,6 @@ import { ProductsModule } from '../products/products.module';
         dbName: process.env.DB_NAME,
       },
     ),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'test'),
-    }),
     // TODO: А это точно именно тут должно быть или можно в модуле почты? Поизучай ещё получше настройки nestjs-mailer-а
     MailerModule.forRoot({
       transport: {
@@ -45,6 +41,7 @@ import { ProductsModule } from '../products/products.module';
     AuthModule,
     MailModule,
     ProductsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
