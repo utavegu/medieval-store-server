@@ -8,8 +8,6 @@ import {
 import { ID } from 'src/typing/types/id';
 import { FileType } from './typespaces/enums/file-type.enum';
 
-const UPLOADS_DIRECTORY = 'public/uploads';
-
 @Injectable()
 export class FilesService {
   async uploadFiles(
@@ -18,7 +16,7 @@ export class FilesService {
     files: Express.Multer.File[],
   ) {
     try {
-      const dirPath = `${UPLOADS_DIRECTORY}/${fileType}/${unitId}/`;
+      const dirPath = `${process.env.UPLOADS_DIRECTORY}/${fileType}/${unitId}/`;
       createDirectory(dirPath);
       for (const file of files) {
         writeFile(dirPath, file);
@@ -31,7 +29,7 @@ export class FilesService {
 
   async deleteFile(fileType: FileType, unitId: ID, fileName: string) {
     try {
-      const dirPath = `${UPLOADS_DIRECTORY}/${fileType}/${unitId}/${fileName}`;
+      const dirPath = `${process.env.UPLOADS_DIRECTORY}/${fileType}/${unitId}/${fileName}`;
       deleteFile(dirPath);
     } catch (err) {
       throw new HttpException(err.message, err.status || 500);
@@ -40,7 +38,7 @@ export class FilesService {
 
   async removeDirectory(fileType: FileType, unitId: ID) {
     try {
-      const dirPath = `${UPLOADS_DIRECTORY}/${fileType}/${unitId}/`;
+      const dirPath = `${process.env.UPLOADS_DIRECTORY}/${fileType}/${unitId}/`;
       removeDirectory(dirPath);
     } catch (err) {
       throw new HttpException(err.message, err.status || 500);
