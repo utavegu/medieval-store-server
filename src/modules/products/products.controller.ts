@@ -61,6 +61,11 @@ export class ProductsController {
     return this.productsService.getProductsByParams(queryParams);
   }
 
+  @Get(':id')
+  getProductById(@Param('id', IdValidationPipe) id: ID): Promise<Product> {
+    return this.productsService.getProductById(id);
+  }
+
   @Delete(':id')
   removeProduct(@Param('id', IdValidationPipe) id: ID): Promise<void> {
     return this.productsService.removeProduct(id);

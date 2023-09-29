@@ -124,7 +124,28 @@ export class ProductsService implements IProductsService {
   }
 
   async getProductById(id: ID): Promise<Product> {
-    throw new Error('Method not implemented.');
+    try {
+      const targetProduct = await this.ProductModel.findById(id)
+        .select('-__v -createdAt -updatedAt')
+        .populate({
+          path: 'category',
+          select: 'productCategoryName',
+        })
+        .populate({
+          path: 'type',
+          select: 'productTypeName',
+        })
+        .populate({
+          path: 'subtype',
+          select: 'productSubtypeName',
+        });
+      if (!targetProduct) {
+        throw new NotFoundException('Данный товар не найден!'); // TODO: Константа
+      }
+      return targetProduct;
+    } catch (err) {
+      throw new HttpException(err.message, err.status || 500);
+    }
   }
 
   async removeProduct(id: ID): Promise<void> {
