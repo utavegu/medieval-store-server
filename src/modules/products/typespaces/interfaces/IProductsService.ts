@@ -9,9 +9,13 @@ export interface IProductsService {
     body: CreateProductDto,
     files: Express.Multer.File[],
   ): Promise<Product>;
-  removePhoto(body: removePhotoDto): Promise<void>;
+  removePhoto(body: removePhotoDto & { unitId: ID }): Promise<void>;
   getProductsByParams(params?: IProductsQueryParams): Promise<Product[]>;
   getProductById(id: ID): Promise<Product>;
   removeProduct(id: ID): Promise<void>;
-  editProduct(id: ID, data: Partial<Product>): Promise<Product>; // TODO: Partial<Product> -> UpdateProductDto
+  editProduct(
+    id: ID,
+    data: CreateProductDto,
+    files: Express.Multer.File[],
+  ): Promise<Product>;
 }

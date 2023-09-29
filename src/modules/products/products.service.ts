@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
@@ -57,11 +57,11 @@ export class ProductsService implements IProductsService {
     fileType,
     unitId,
     fileName,
-  }: removePhotoDto): Promise<void> {
+  }: removePhotoDto & { unitId: ID }): Promise<void> {
     try {
       await this.ProductModel.updateOne(
         { _id: unitId },
-        { $pull: { photos: `uploads/${fileType}/${fileName}` } },
+        { $pull: { photos: fileName } },
       );
       await this.filesService.deleteFile(fileType, unitId, fileName);
       return;
@@ -124,14 +124,76 @@ export class ProductsService implements IProductsService {
   }
 
   async getProductById(id: ID): Promise<Product> {
-    throw new Error('Method not implemented.');
+    try {
+      const targetProduct = await this.ProductModel.findById(id)
+        .select('-__v -createdAt -updatedAt')
+        .populate({
+          path: 'category',
+          select: 'productCategoryName',
+        })
+        .populate({
+          path: 'type',
+          select: 'productTypeName',
+        })
+        .populate({
+          path: 'subtype',
+          select: 'productSubtypeName',
+        });
+      if (!targetProduct) {
+        throw new NotFoundException('Данный товар не найден!'); // TODO: Константа
+      }
+      return targetProduct;
+    } catch (err) {
+      throw new HttpException(err.message, err.status || 500);
+    }
   }
 
   async removeProduct(id: ID): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      await this.ProductModel.findByIdAndDelete(id);
+      await this.filesService.removeDirectory(FileType.IMAGE, id);
+    } catch (err) {
+      throw new HttpException(err.message, err.status || 500);
+    }
   }
 
-  async editProduct(id: ID, data: Partial<Product>): Promise<Product> {
-    throw new Error('Method not implemented.');
+  async editProduct(
+    id: ID,
+    data: CreateProductDto,
+    files: Express.Multer.File[],
+  ): Promise<Product> {
+    try {
+      const product = await this.ProductModel.findByIdAndUpdate(
+        id,
+        {
+          ...data,
+          updatedAt: new Date().toISOString(),
+          price: Math.abs(Number(data.price)).toFixed(2),
+          photos: getImagesPaths(files),
+        },
+        { new: true },
+      )
+        .select('-__v -createdAt -updatedAt')
+        .populate({
+          path: 'category',
+          select: 'productCategoryName',
+        })
+        .populate({
+          path: 'type',
+          select: 'productTypeName',
+        })
+        .populate({
+          path: 'subtype',
+          select: 'productSubtypeName',
+        });
+      if (product) {
+        await this.filesService.uploadFiles(FileType.IMAGE, product.id, files);
+      } else {
+        throw new NotFoundException('Данный товар не найден!'); // TODO: Константа
+      }
+      return product;
+    } catch (err) {
+      throw new HttpException(err.message, err.status || 500);
+    }
   }
 }
