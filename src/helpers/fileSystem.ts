@@ -1,4 +1,10 @@
-import { mkdirSync, existsSync, writeFileSync, unlinkSync } from 'fs';
+import {
+  mkdirSync,
+  existsSync,
+  writeFileSync,
+  unlinkSync,
+  rmdirSync,
+} from 'fs';
 
 const createDirectory = (dirPath: string) => {
   if (!existsSync(dirPath)) {
@@ -24,4 +30,10 @@ const deleteFile = (path: string) => {
   }
 };
 
-export { createDirectory, writeFile, deleteFile };
+const removeDirectory = (dirPath: string) => {
+  if (existsSync(dirPath)) {
+    rmdirSync(dirPath, { recursive: true });
+  }
+};
+
+export { createDirectory, writeFile, deleteFile, removeDirectory };

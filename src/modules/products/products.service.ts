@@ -128,7 +128,12 @@ export class ProductsService implements IProductsService {
   }
 
   async removeProduct(id: ID): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      await this.ProductModel.findByIdAndDelete(id);
+      await this.filesService.removeDirectory(FileType.IMAGE, id);
+    } catch (err) {
+      throw new HttpException(err.message, err.status || 500);
+    }
   }
 
   async editProduct(id: ID, data: Partial<Product>): Promise<Product> {
