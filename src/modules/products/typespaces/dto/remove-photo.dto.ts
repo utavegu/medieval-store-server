@@ -5,9 +5,6 @@ export class removePhotoDto {
   @IsEnum(FileType)
   fileType: FileType;
 
-  @IsMongoId()
-  unitId: string;
-
   @IsString()
   fileName: string;
 }
