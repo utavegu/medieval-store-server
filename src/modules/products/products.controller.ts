@@ -66,9 +66,24 @@ export class ProductsController {
     return this.productsService.removeProduct(id);
   }
 
-  @Put('photo')
-  removePhoto(@Body() body: removePhotoDto): Promise<void> {
-    return this.productsService.removePhoto(body);
+  @Put(':id')
+  @UseInterceptors(
+    FilesInterceptor('photos', MAX_IMAGES_COUNT, filesInterceptorSetup),
+  )
+  editProduct(
+    @Param('id', IdValidationPipe) id: ID,
+    @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
+    @Body() body: CreateProductDto,
+  ): Promise<Product | null> {
+    return this.productsService.editProduct(id, body, files);
+  }
+
+  @Delete(':id/photo')
+  removePhoto(
+    @Param('id', IdValidationPipe) id: ID,
+    @Body() body: removePhotoDto,
+  ): Promise<void> {
+    return this.productsService.removePhoto({ ...body, unitId: id });
   }
 
   @Post('categories')
