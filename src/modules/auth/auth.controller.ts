@@ -23,7 +23,7 @@ import { ID } from 'src/typing/types/id';
 import { AuthDto } from './typing/dto/auth.dto';
 import { IJwtTokens } from './typing/interfaces/IJwtTokens';
 import { Roles } from '../users/typing/enums/roles.enum';
-// TODO: Часть методов асинхронные, часть - нет. Освежи этот момент в памяти. Вроде в контроллере асинк-эвэйты не обязательны, лишь бы в сервисах были
+// TODO: Часть методов асинхронные, часть - нет. Освежи этот момент в памяти. Вроде в контроллере асинк-эвэйты не обязательны, лишь бы в сервисах были (но некоторые-то без них и не взлетят, ибо эвэйты внутри используются, тут всяко оставить придётся)
 
 @Controller('auth')
 export class AuthController {
@@ -66,16 +66,24 @@ export class AuthController {
   // Логику работы расписал ниже
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
-  refreshTokens(
+  async refreshTokens(
     @Request()
     request: RequestType & {
       user: Partial<User> & { sub: ID; refreshToken: string };
     },
-  ) {
+    @Response() response: ResponseType & User,
+  ): Promise<{ accessToken: string }> {
     const { user } = request;
-    const userId = user['sub'];
-    const refreshToken = user['refreshToken'];
-    return this.authService.refreshTokens(userId, refreshToken); // TODO: тут неправильно - повтори логику из логина
+    // const userId = user['sub'];
+    // const refreshToken = user['refreshToken'];
+    const tokens = await this.authService.refreshTokens(
+      user['sub'],
+      user['refreshToken'],
+    );
+    response
+      .cookie('refreshToken', tokens.refreshToken, refreshTokenCookieOptions)
+      .set(loginResponseHeaders);
+    return { accessToken: tokens.accessToken };
   }
 
   @Get('activate/:link')
@@ -83,6 +91,12 @@ export class AuthController {
   @Redirect('http://localhost:3000', 301) // TODO: динамичный енв, зависимый от прод/дев. Страница успешной активации профиля
   async activateProfile(@Param('link') link: string): Promise<void> {
     await this.authService.activateProfile(link);
+    return;
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('checkauth')
+  checkAuth(): void {
     return;
   }
 
