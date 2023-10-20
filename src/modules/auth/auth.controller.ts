@@ -52,6 +52,7 @@ export class AuthController {
 
   // Только залогиненным пользователям
   @UseGuards(AccessTokenGuard)
+  // TODO: На фронтенде если оба токена протухли, эта ручка не дёрнется. Нужно будет как-то из базы протухшие токены вычищать и отцеплять протухший токен от пользователя. Затереть на фронтенде при протухании я его тоже не смогу, так как кука хттп-онли
   @Get('logout')
   logout(
     @Request() request: RequestType & { user: Partial<User> & { sub: ID } },
@@ -71,7 +72,7 @@ export class AuthController {
     request: RequestType & {
       user: Partial<User> & { sub: ID; refreshToken: string };
     },
-    @Response() response: ResponseType & User,
+    @Response({ passthrough: true }) response: ResponseType & User,
   ): Promise<{ accessToken: string }> {
     const { user } = request;
     // const userId = user['sub'];
