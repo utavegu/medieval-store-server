@@ -18,7 +18,7 @@ async function bootstrap() {
     .useStaticAssets(resolve(__dirname, '../public')) // не забывай, что само "public" будет игнорироватсья в итоговом пути
     .use(cookieParser())
     .enableCors({
-      origin: ['http://localhost:3000'], // енв, конфиг, зависимость от ноденв-продакшн. И разберись ещё потом - внешний или внутренний порт фронтенда нужно указывать.
+      origin: ['http://localhost:3000', 'http://localhost:3001'], // енв, конфиг, зависимость от ноденв-продакшн. И разберись ещё потом - внешний или внутренний порт фронтенда нужно указывать.
       credentials: true,
       optionsSuccessStatus: 200,
     });
