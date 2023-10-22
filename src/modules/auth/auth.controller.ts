@@ -31,15 +31,14 @@ import { Roles } from '../users/typing/enums/roles.enum';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // Только незалогиненным пользователям
+  @UseGuards(OnlyGuestGuard)
   @Post('registration')
   signup(@Body() createUserDto: CreateUserDto): Promise<IJwtTokens> {
     return this.authService.signUp(createUserDto);
   }
 
-  // Только незалогиненным пользователям
-  // mock password: 1dd2__345A__!f-f+s
   // TODO: А почему успешный ответ 201? Какой ресурс мы создали? Дефолтная реакция на POST-запрос?
+  @UseGuards(OnlyGuestGuard)
   @Post('login')
   async signin(
     @Body() data: AuthDto,
