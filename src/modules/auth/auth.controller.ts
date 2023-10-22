@@ -12,11 +12,13 @@ import {
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { loginResponseHeaders, refreshTokenCookieOptions } from './auth.config';
 import { Role } from 'src/decorators/role.decorator';
+import { RolesDecorator } from 'src/decorators/roles.decorator';
 import { CreateUserDto } from 'src/modules/users/typing/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AccessTokenGuard } from 'src/modules/auth/guards/accessToken.guard';
 import { RefreshTokenGuard } from 'src/modules/auth/guards/refreshToken.guard';
 import { RoleGuard } from './guards/role.guard';
+import { RolesGuard } from './guards/roles.guard';
 import { OnlyGuestGuard } from './guards/only-guest.guard';
 import { User } from '../users/schemas/user.schema';
 import { ID } from 'src/typing/types/id';
@@ -139,5 +141,13 @@ export class AuthController {
   @Get('test/admin')
   testAdmin(): string {
     return 'Только админы';
+  }
+
+  // Только админам и манагерам
+  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Get('test/employees')
+  testEmployees(): string {
+    return 'Только админы или манагеры';
   }
 }
