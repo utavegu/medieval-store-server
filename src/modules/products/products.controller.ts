@@ -51,60 +51,9 @@ export class ProductsController {
     private readonly productSubtypeService: ProductSubtypeService,
   ) {}
 
-  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Post()
-  @UseInterceptors(
-    FilesInterceptor('photos', MAX_IMAGES_COUNT, filesInterceptorSetup),
-  )
-  createProduct(
-    @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
-    @Body() body: CreateProductDto,
-  ): Promise<Product> {
-    return this.productsService.createProduct(body, files);
-  }
-
-  @Get()
-  getProductsByParams(
-    @Query() queryParams: IProductsQueryParams,
-  ): Promise<Product[]> {
-    return this.productsService.getProductsByParams(queryParams);
-  }
-
-  @Get(':id')
-  getProductById(@Param('id', IdValidationPipe) id: ID): Promise<Product> {
-    return this.productsService.getProductById(id);
-  }
-
-  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Delete(':id')
-  removeProduct(@Param('id', IdValidationPipe) id: ID): Promise<void> {
-    return this.productsService.removeProduct(id);
-  }
-
-  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Put(':id')
-  @UseInterceptors(
-    FilesInterceptor('photos', MAX_IMAGES_COUNT, filesInterceptorSetup),
-  )
-  editProduct(
-    @Param('id', IdValidationPipe) id: ID,
-    @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
-    @Body() body: CreateProductDto,
-  ): Promise<Product | null> {
-    return this.productsService.editProduct(id, body, files);
-  }
-
-  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Delete(':id/photo')
-  removePhoto(
-    @Param('id', IdValidationPipe) id: ID,
-    @Body() body: removePhotoDto,
-  ): Promise<void> {
-    return this.productsService.removePhoto({ ...body, unitId: id });
+  @Get('categories')
+  getAllCategories(): Promise<ProductCategory[]> {
+    return this.productCategoryService.getAllCategories();
   }
 
   @Role(Roles.ADMIN)
@@ -114,11 +63,6 @@ export class ProductsController {
     @Body() { productCategoryName }: { productCategoryName: string },
   ): Promise<ProductCategory> {
     return this.productCategoryService.addCategory(productCategoryName);
-  }
-
-  @Get('categories')
-  getAllCategories(): Promise<ProductCategory[]> {
-    return this.productCategoryService.getAllCategories();
   }
 
   @Role(Roles.ADMIN)
@@ -212,5 +156,61 @@ export class ProductsController {
       id,
       productSubtypeName,
     );
+  }
+
+  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Post()
+  @UseInterceptors(
+    FilesInterceptor('photos', MAX_IMAGES_COUNT, filesInterceptorSetup),
+  )
+  createProduct(
+    @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
+    @Body() body: CreateProductDto,
+  ): Promise<Product> {
+    return this.productsService.createProduct(body, files);
+  }
+
+  @Get()
+  getProductsByParams(
+    @Query() queryParams: IProductsQueryParams,
+  ): Promise<Product[]> {
+    return this.productsService.getProductsByParams(queryParams);
+  }
+
+  @Get(':id')
+  getProductById(@Param('id', IdValidationPipe) id: ID): Promise<Product> {
+    return this.productsService.getProductById(id);
+  }
+
+  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Delete(':id')
+  removeProduct(@Param('id', IdValidationPipe) id: ID): Promise<void> {
+    return this.productsService.removeProduct(id);
+  }
+
+  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Put(':id')
+  @UseInterceptors(
+    FilesInterceptor('photos', MAX_IMAGES_COUNT, filesInterceptorSetup),
+  )
+  editProduct(
+    @Param('id', IdValidationPipe) id: ID,
+    @UploadedFiles(imageParseFilePipeInstance) files: Express.Multer.File[],
+    @Body() body: CreateProductDto,
+  ): Promise<Product | null> {
+    return this.productsService.editProduct(id, body, files);
+  }
+
+  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Delete(':id/photo')
+  removePhoto(
+    @Param('id', IdValidationPipe) id: ID,
+    @Body() body: removePhotoDto,
+  ): Promise<void> {
+    return this.productsService.removePhoto({ ...body, unitId: id });
   }
 }
