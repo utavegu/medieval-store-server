@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { getImagesPaths } from 'src/helpers/getImagesPaths';
+import { getProductsSortingConditions } from 'src/helpers/getProductsSortingConditions';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/constants';
 import { FilesService } from '../files/files.service';
 import { ID } from 'src/typing/types/id';
@@ -79,6 +80,7 @@ export class ProductsService implements IProductsService {
     category,
     type,
     subtype,
+    sort,
   }: IProductsQueryParams): Promise<Product[]> {
     try {
       const priceRange: IPriceRange = {};
@@ -104,6 +106,10 @@ export class ProductsService implements IProductsService {
       const products = await this.ProductModel.find(productsFilterParams)
         .limit(Math.abs(Number(limit)))
         .skip(Math.abs(Number(offset)))
+        // TODO
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .sort(getProductsSortingConditions(sort))
         .select('-__v')
         .populate({
           path: 'category',
