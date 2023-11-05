@@ -4,4 +4,5 @@ export interface IProductsFilterParams {
   category: string;
   type: string;
   subtype: string;
+  materials: string;
 }

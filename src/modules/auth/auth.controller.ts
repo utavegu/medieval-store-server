@@ -12,11 +12,13 @@ import {
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { loginResponseHeaders, refreshTokenCookieOptions } from './auth.config';
 import { Role } from 'src/decorators/role.decorator';
+import { RolesDecorator } from 'src/decorators/roles.decorator';
 import { CreateUserDto } from 'src/modules/users/typing/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AccessTokenGuard } from 'src/modules/auth/guards/accessToken.guard';
 import { RefreshTokenGuard } from 'src/modules/auth/guards/refreshToken.guard';
 import { RoleGuard } from './guards/role.guard';
+import { RolesGuard } from './guards/roles.guard';
 import { OnlyGuestGuard } from './guards/only-guest.guard';
 import { User } from '../users/schemas/user.schema';
 import { ID } from 'src/typing/types/id';
@@ -29,15 +31,14 @@ import { Roles } from '../users/typing/enums/roles.enum';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // Только незалогиненным пользователям
+  @UseGuards(OnlyGuestGuard)
   @Post('registration')
   signup(@Body() createUserDto: CreateUserDto): Promise<IJwtTokens> {
     return this.authService.signUp(createUserDto);
   }
 
-  // Только незалогиненным пользователям
-  // mock password: 1dd2__345A__!f-f+s
   // TODO: А почему успешный ответ 201? Какой ресурс мы создали? Дефолтная реакция на POST-запрос?
+  @UseGuards(OnlyGuestGuard)
   @Post('login')
   async signin(
     @Body() data: AuthDto,
@@ -139,5 +140,13 @@ export class AuthController {
   @Get('test/admin')
   testAdmin(): string {
     return 'Только админы';
+  }
+
+  // Только админам и манагерам
+  @RolesDecorator(Roles.ADMIN, Roles.MANAGER)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Get('test/employees')
+  testEmployees(): string {
+    return 'Только админы или манагеры';
   }
 }
