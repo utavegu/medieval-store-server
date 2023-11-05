@@ -64,6 +64,9 @@ export class Product {
   @Prop()
   updatedAt: Date;
 
+  @Prop()
+  materials: [string];
+
   // возможно объектом тут не надо
   // specifications: {
   //   weight: number;

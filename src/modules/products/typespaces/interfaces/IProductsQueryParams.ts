@@ -40,4 +40,8 @@ export class IProductsQueryParams {
 
   @IsEnum(SortingType)
   sort: SortingType;
+
+  @IsString()
+  @IsOptional()
+  materials?: string;
 }

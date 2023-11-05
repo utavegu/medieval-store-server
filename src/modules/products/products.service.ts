@@ -81,6 +81,7 @@ export class ProductsService implements IProductsService {
     type,
     subtype,
     sort,
+    materials,
   }: IProductsQueryParams): Promise<Product[]> {
     try {
       const priceRange: IPriceRange = {};
@@ -89,11 +90,12 @@ export class ProductsService implements IProductsService {
       if (maxPrice) priceRange['$lte'] = Number(maxPrice);
 
       const productsFilterParams = {
-        productName: productName && { $regex: productName },
+        productName: productName && { $regex: productName, $options: 'i' },
         price: !!Object.keys(priceRange).length ? priceRange : undefined, // TODO: на фронтенде это двурычажковый рэндж
         category, // TODO: массив (но на фронте фильтр подкатегорий разворачивается в зависимости от чекбоксов выбранного типа - если категория выбрана только одна, откроются только её типы и так далее)
         type, // TODO: массив (определить в каком виде будет прилетать формдата с чекбоксов)
         subtype, // TODO: массив
+        materials: !!materials && { $all: materials.split(',') },
       };
 
       for (const param in productsFilterParams) {
