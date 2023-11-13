@@ -1,9 +1,8 @@
 import { IsNumberString, IsOptional, IsString, IsEnum } from 'class-validator';
 import { SortingType } from '../enums/sorting-type.enum';
 
-// TODO: Добавить ещё массив - материалы. Всего должны быть реализованы поиск по параметрам: строка - нечто из названия или описания продукта, совпадения; диапазон минимальной и максимальной цены; массив интересующих материалов, сортировка - 4 вида
-
 export class IProductsQueryParams {
+  /*
   @IsNumberString()
   // @IsPositive()
   @IsOptional()
@@ -13,6 +12,7 @@ export class IProductsQueryParams {
   @IsOptional()
   // @IsPositive()
   offset?: number | string;
+  */
 
   @IsString()
   @IsOptional()
@@ -44,4 +44,8 @@ export class IProductsQueryParams {
   @IsString()
   @IsOptional()
   materials?: string;
+
+  @IsNumberString()
+  @IsOptional()
+  page?: number | string;
 }

@@ -72,8 +72,6 @@ export class ProductsService implements IProductsService {
   }
 
   async getProductsByParams({
-    limit = DEFAULT_LIMIT,
-    offset = DEFAULT_OFFSET,
     productName,
     minPrice,
     maxPrice,
@@ -82,7 +80,8 @@ export class ProductsService implements IProductsService {
     subtype,
     sort,
     materials,
-  }: IProductsQueryParams): Promise<Product[]> {
+    page = 1,
+  }: IProductsQueryParams): Promise<{ products: Product[]; pages: number }> {
     try {
       const priceRange: IPriceRange = {};
 
@@ -90,7 +89,10 @@ export class ProductsService implements IProductsService {
       if (maxPrice) priceRange['$lte'] = Number(maxPrice);
 
       const productsFilterParams = {
-        productName: productName && { $regex: productName, $options: 'i' },
+        productName: productName && {
+          $regex: productName.trim(),
+          $options: 'i',
+        },
         price: !!Object.keys(priceRange).length ? priceRange : undefined, // TODO: на фронтенде это двурычажковый рэндж
         category, // TODO: массив (но на фронте фильтр подкатегорий разворачивается в зависимости от чекбоксов выбранного типа - если категория выбрана только одна, откроются только её типы и так далее)
         type, // TODO: массив (определить в каком виде будет прилетать формдата с чекбоксов)
@@ -105,9 +107,14 @@ export class ProductsService implements IProductsService {
         }
       }
 
+      const productsPerPage = 3; // Такое себе хардкодить это, но пока оставлю.
+      const offset = (Number(page) - 1) * productsPerPage;
+      const total = await this.ProductModel.find(productsFilterParams).count();
+      const pages = Math.ceil(total / productsPerPage);
+
       const products = await this.ProductModel.find(productsFilterParams)
-        .limit(Math.abs(Number(limit)))
-        .skip(Math.abs(Number(offset)))
+        .limit(productsPerPage)
+        .skip(offset)
         // TODO
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -125,7 +132,7 @@ export class ProductsService implements IProductsService {
           path: 'subtype',
           select: 'productSubtypeName',
         });
-      return products;
+      return { products, pages };
     } catch (err) {
       throw new HttpException(err.message, err.status || 500);
     }

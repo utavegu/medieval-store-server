@@ -174,7 +174,7 @@ export class ProductsController {
   @Get()
   getProductsByParams(
     @Query() queryParams: IProductsQueryParams,
-  ): Promise<Product[]> {
+  ): Promise<{ products: Product[]; pages: number }> {
     return this.productsService.getProductsByParams(queryParams);
   }
 
